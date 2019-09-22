@@ -1,7 +1,7 @@
 import 'dart:math';
 
-import 'cell.dart';
-import 'grid.dart';
+import 'package:maze_gen/core/models/cell.dart';
+import 'package:maze_gen/core/models/grid.dart';
 
 class BinaryTree {
   static Grid on(Grid grid) {

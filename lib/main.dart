@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:maze_gen/core/models/generators/binary_tree.dart';
+import 'package:maze_gen/core/models/generators/sidewinder.dart';
 import 'package:maze_gen/core/models/grid.dart';
 
-import 'core/models/binary_tree.dart';
 import 'core/models/cell.dart';
-import 'core/models/sidewinder.dart';
 
 void main() => runApp(MyApp());
 
@@ -12,11 +12,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Matt\'s Maze',
+      title: 'Mazes',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.blueGrey,
       ),
-      home: MyHomePage(title: "Matt's Maze"),
+      home: MyHomePage(title: "Mazes"),
     );
   }
 }
@@ -80,28 +80,31 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       ),
       body: Center(
-        child: AspectRatio(
-          aspectRatio: 1,
-          child: Column(
-            children: [
-              for (var row = 0; row != _grid.rows; ++row)
-                Expanded(
-                  child: Row(
-                    children: [
-                      for (var col = 0; col != _grid.cols; ++col)
-                        Expanded(
-                          child: CellView(_grid.getCell(row, col), _grid.rows),
-                        ),
-                    ],
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: AspectRatio(
+            aspectRatio: 1.0,
+            child: Column(
+              children: [
+                for (var row = 0; row != _grid.rows; ++row)
+                  Expanded(
+                    child: Row(
+                      children: [
+                        for (var col = 0; col != _grid.cols; ++col)
+                          Expanded(
+                            child: CellView(_grid.getCell(row, col), _grid.rows),
+                          ),
+                      ],
+                    ),
                   ),
-                ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _resetGrid,
-        tooltip: 'Regen',
+        tooltip: 'New Maze',
         child: Icon(Icons.gesture),
       ),
     );
@@ -115,7 +118,6 @@ class CellView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: switch to custom painter
     return Container(
       decoration: BoxDecoration(
         border: Border(
@@ -125,7 +127,7 @@ class CellView extends StatelessWidget {
           bottom: _getBorderSide(Wall.south),
         ),
         color:
-            cell.entry ? Colors.green.withOpacity(0.3) : cell.exit ? Colors.greenAccent.withOpacity(0.3) : Colors.white,
+            cell.entry ? Colors.green.withOpacity(0.1) : cell.exit ? Colors.greenAccent.withOpacity(0.1) : Colors.white,
       ),
     );
   }
@@ -152,3 +154,5 @@ class CellView extends StatelessWidget {
     return BorderSide(width: 5.0, style: BorderStyle.solid, color: Colors.blueGrey);
   }
 }
+
+// TODO: prerender the 16 kind of cells and use them accordingly

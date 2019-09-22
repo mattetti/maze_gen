@@ -1,7 +1,7 @@
 import 'dart:math';
 
-import 'cell.dart';
-import 'grid.dart';
+import 'package:maze_gen/core/models/cell.dart';
+import 'package:maze_gen/core/models/grid.dart';
 
 class Sidewinder {
   static Grid on(Grid grid) {
@@ -14,30 +14,33 @@ class Sidewinder {
     for (var i = 0; i < grid.size(); i++) {
       _iterator.moveNext();
       cell = _iterator.current;
-
-      // if we are at the nothern boundary, only go right up to the eastern
-      // boundary.
-      if (grid.isNothernBoundary(cell)) {
-        if (!grid.isEasternBoundary(cell)) {
-          grid.link(cell, Wall.east);
-        }
-        continue;
-      }
       run.add(cell);
 
-      if (grid.isEasternBoundary(cell) || _rand.nextInt(2) == 0) {
+      // if we reach the eastern boundry (end of row) or we aren't at the
+      // nothern boundary but randomly won a toss, then we should close the run
+      // and pick a winner (to link to its northern neighbor)
+      final shouldCloseOut = grid.isEasternBoundary(cell) || (!grid.isNothernBoundary(cell) && _rand.nextInt(2) == 0);
+
+      if (shouldCloseOut) {
         final rando = run[_rand.nextInt(run.length)];
-        grid.link(rando, Wall.north);
+        if (!grid.isNothernBoundary(rando)) {
+          grid.link(rando, Wall.north);
+        }
         run.clear();
       } else {
         grid.link(cell, Wall.east);
       }
     }
+    _setEntryAndExits(grid);
 
-    // openings
+    return grid;
+  }
+
+  static _setEntryAndExits(Grid grid) {
+    final _rand = Random();
     // entry
     int row = _rand.nextInt(grid.rows);
-    cell = grid.getCell(row, 0);
+    var cell = grid.getCell(row, 0);
     cell.connections[Wall.west.index] = true;
     cell.entry = true;
     // exit
@@ -45,7 +48,5 @@ class Sidewinder {
     cell = grid.getCell(row, grid.cols - 1);
     cell.connections[Wall.east.index] = true;
     cell.exit = true;
-
-    return grid;
   }
 }
