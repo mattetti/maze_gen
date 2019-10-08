@@ -31,22 +31,23 @@ class Sidewinder {
         grid.link(cell, Wall.east);
       }
     }
-    _setEntryAndExits(grid);
-
-    return grid;
+    return _setEntryAndExits(grid);
   }
 
-  static _setEntryAndExits(Grid grid) {
+  static Grid _setEntryAndExits(Grid grid) {
     final _rand = Random();
     // entry
     int row = _rand.nextInt(grid.rows);
     var cell = grid.getCell(row, 0);
     cell.connections[Wall.west.index] = true;
     cell.entry = true;
+    grid.entryOffset = grid.offset(row, 0);
     // exit
     row = _rand.nextInt(grid.rows);
     cell = grid.getCell(row, grid.cols - 1);
     cell.connections[Wall.east.index] = true;
     cell.exit = true;
+    grid.exitOffset = grid.offset(row, 0);
+    return grid;
   }
 }

@@ -6,28 +6,31 @@ class Grid {
   final int rows;
   final int cols;
   final List<Cell> _cells;
+  int entryOffset = 0;
+  int exitOffset = 0;
   final _rand = Random();
 
   // Translate 2D row, column pair into a 1D offset
-  int _offset(int row, int col) => row * rows + col;
+  int offset(int row, int col) => row * rows + col;
 
   // Create a grid with all cells having walls up
   Grid(this.rows, this.cols) : _cells = List<Cell>(rows * cols) {
     int row;
-    int offset;
+    int _offset;
     for (var col = 0; col < cols; col++) {
       for (row = 0; row < rows; row++) {
-        offset = _offset(row, col);
-        _cells[offset] = Cell(row, col);
+        _offset = offset(row, col);
+        _cells[_offset] = Cell(row, col);
       }
     }
+    exitOffset = size();
   }
 
   Cell getCell(int row, int col) {
     if (row < 0 || row >= rows || col < 0 || col >= cols) {
       return null;
     }
-    return _cells[_offset(row, col)];
+    return _cells[offset(row, col)];
   }
 
   Cell getCellAt(int index) {
@@ -53,6 +56,21 @@ class Grid {
       default:
         assert(false);
     }
+  }
+
+  // connectedCells returns a list of cells that are directly connected to the
+  // passed cell.
+  List<Cell> connectedCells(Cell cell) {
+    List<Cell> neighbors = [];
+    cell.connections.asMap().forEach((idx, isConnected) {
+      if (isConnected) {
+        var connectedCell = adjacentCell(cell, Wall.values[idx]);
+        if (connectedCell != null) {
+          neighbors.add(connectedCell);
+        }
+      }
+    });
+    return neighbors;
   }
 
   Cell randomCell() {
@@ -112,11 +130,11 @@ class Grid {
 
   Iterable<Cell> cellsByRow() sync* {
     int col;
-    int offset;
+    int _offset;
     for (var row = 0; row < rows; row++) {
       for (col = 0; col < cols; col++) {
-        offset = _offset(row, col);
-        yield _cells[offset];
+        _offset = offset(row, col);
+        yield _cells[_offset];
       }
     }
   }

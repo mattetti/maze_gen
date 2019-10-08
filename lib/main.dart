@@ -1,11 +1,19 @@
+import 'dart:async';
+import 'dart:collection';
+
 import 'package:flutter/material.dart';
 import 'package:maze_gen/core/models/generators/binary_tree.dart';
 import 'package:maze_gen/core/models/generators/sidewinder.dart';
 import 'package:maze_gen/core/models/grid.dart';
+import 'package:maze_gen/core/models/solvers/dijkstra.dart';
+import 'package:maze_gen/ui/cell/cell_view.dart';
 
 import 'core/models/cell.dart';
 
 void main() => runApp(MyApp());
+
+int gridWidth = 20;
+int gridHeight = 20;
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
@@ -31,25 +39,72 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  Grid _grid = BinaryTree.on(Grid(30, 30));
+  Grid _grid = Grid(gridWidth, gridHeight);
+  // HashMap<int, int> distances;
+  Iterable<int> _visitedOffsets;
+  Iterator<Cell> _iterator;
+
   var _currentIndex = 0;
 
-  _resetGrid() {
+  @override
+  void initState() {
+    super.initState();
+    _resetGrid();
+    // generate();
+  }
+
+  // void generate() {
+  //   final nextGridContent = newGrid();
+  //   _iterator = nextGridContent.cellsByRow().iterator;
+  //   Timer.periodic(Duration(microseconds: 50), onTick);
+  // }
+
+  // void onTick(Timer timer) {
+  //   if (_iterator.moveNext()) {
+  //     var visited = _iterator.current;
+  //     final cell = _grid.getCell(visited.row, visited.col);
+  //     cell.connections = visited.connections;
+  //     setState(() {});
+  //     // debugPrint('visited: ${visited.row}, ${visited.col}');
+  //   } else {
+  //     timer.cancel();
+  //     _iterator = null;
+  //     setState(() {});
+  //     // debugPrint('done');
+  //   }
+  // }
+
+  void _resetGrid() {
     setState(() {
-      switch (_currentIndex) {
-        case 0:
-          _grid = BinaryTree.on(Grid(30, 30));
-          break;
-        case 1:
-          _grid = Sidewinder.on(Grid(30, 30));
-          break;
-        default:
-          _grid = BinaryTree.on(Grid(30, 30));
-      }
+      _visitedOffsets = [];
+      _grid = newGrid();
     });
   }
 
+  Grid newGrid() {
+    switch (_currentIndex) {
+      case 0:
+        return BinaryTree.on(Grid(gridWidth, gridHeight));
+        break;
+      case 1:
+        return Sidewinder.on(Grid(gridWidth, gridHeight));
+        break;
+      default:
+        return BinaryTree.on(Grid(gridWidth, gridHeight));
+    }
+  }
+
   void onTabTapped(int index) {
+    if (index == 2) {
+      setState(() {
+        final solver = Dijkstra(_grid);
+        final exitCell = _grid.getCellAt(_grid.exitOffset);
+        _visitedOffsets = solver.pathTo(exitCell.row, exitCell.col);
+        print("${_visitedOffsets.length} steps to the solution");
+      });
+      return;
+    }
+
     if (index == _currentIndex) {
       return;
     }
@@ -76,7 +131,7 @@ class _MyHomePageState extends State<MyHomePage> {
             icon: new Icon(Icons.rowing),
             title: new Text('Sidewinder'),
           ),
-          BottomNavigationBarItem(icon: Icon(Icons.person), title: Text('Profile'))
+          BottomNavigationBarItem(icon: Icon(Icons.remove_red_eye), title: Text('Solve'))
         ],
       ),
       body: Center(
@@ -92,7 +147,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       children: [
                         for (var col = 0; col != _grid.cols; ++col)
                           Expanded(
-                            child: CellView(_grid.getCell(row, col), _grid.rows),
+                            child: cellViewForCell(row, col),
                           ),
                       ],
                     ),
@@ -109,49 +164,10 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
   }
-}
 
-class CellView extends StatelessWidget {
-  final Cell cell;
-  final int gridRows;
-  CellView(this.cell, this.gridRows);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        border: Border(
-          top: _getBorderSide(Wall.north),
-          left: _getBorderSide(Wall.west),
-          right: _getBorderSide(Wall.east),
-          bottom: _getBorderSide(Wall.south),
-        ),
-        color:
-            cell.entry ? Colors.green.withOpacity(0.1) : cell.exit ? Colors.greenAccent.withOpacity(0.1) : Colors.white,
-      ),
-    );
-  }
-
-  BorderSide _getBorderSide(Wall wall) {
-    // west wall is only drawn when we are in the first column
-    if (wall == Wall.west) {
-      if (cell.col == 0 && !cell.connections[wall.index]) {
-        return BorderSide(width: 5.0, style: BorderStyle.solid, color: Colors.blueGrey);
-      }
-      return BorderSide.none;
-    }
-
-    if (wall == Wall.south) {
-      if (cell.row == gridRows - 1) {
-        return BorderSide(width: 5.0, style: BorderStyle.solid, color: Colors.blueGrey);
-      }
-      return BorderSide.none;
-    }
-
-    if (cell.connections[wall.index]) {
-      return BorderSide.none;
-    }
-    return BorderSide(width: 5.0, style: BorderStyle.solid, color: Colors.blueGrey);
+  CellView cellViewForCell(int row, int col) {
+    final isVisited = _visitedOffsets == null ? false : _visitedOffsets.contains(_grid.offset(row, col));
+    return CellView(_grid.getCell(row, col), _grid.rows)..visited = isVisited;
   }
 }
 
