@@ -40,7 +40,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   Grid _grid = Grid(gridWidth, gridHeight);
-  // HashMap<int, int> distances;
+  // list of offsets that are visited (walked)
   Iterable<int> _visitedOffsets;
   Iterator<Cell> _iterator;
 
@@ -50,7 +50,6 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     _resetGrid();
-    // generate();
   }
 
   // void generate() {

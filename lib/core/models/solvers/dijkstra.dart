@@ -50,6 +50,7 @@ class Dijkstra {
 
     // start from the end/goal
     var currentOffset = grid.offset(row, col);
+    breadcrumbs[currentOffset] = 0; // mark the end as visited
     var current = grid.getCellAt(currentOffset);
     final start = grid.getCellAt(_startOffset);
     if (distances.length < 1) {
