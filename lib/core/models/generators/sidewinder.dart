@@ -47,7 +47,7 @@ class Sidewinder {
     cell = grid.getCell(row, grid.cols - 1);
     cell.connections[Wall.east.index] = true;
     cell.exit = true;
-    grid.exitOffset = grid.offset(row, 0);
+    grid.exitOffset = grid.offset(cell.row, cell.col);
     return grid;
   }
 }

@@ -100,7 +100,7 @@ class _MyHomePageState extends State<MyHomePage> {
         final solver = Dijkstra(_grid);
         final exitCell = _grid.getCellAt(_grid.exitOffset);
         _visitedOffsets = solver.pathTo(exitCell.row, exitCell.col);
-        print("${_visitedOffsets.length} steps to the solution");
+        debugPrint("${_visitedOffsets.length} steps to the solution");
       });
       return;
     }

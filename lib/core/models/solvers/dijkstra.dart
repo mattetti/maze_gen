@@ -9,9 +9,9 @@ class Dijkstra {
   int _startOffset;
   final distances = HashMap<int, int>();
 
-  Dijkstra(this.grid, {int startX, int startY}) {
-    if (startX != null && startY != null) {
-      _startOffset = grid.offset(startX, startY);
+  Dijkstra(this.grid, {int startRow, int startCol}) {
+    if (startRow != null && startCol != null) {
+      _startOffset = grid.offset(startRow, startCol);
     } else {
       _startOffset = grid.entryOffset;
     }
@@ -45,18 +45,18 @@ class Dijkstra {
   // pathTo returns a list of cells used to go from the start to a given
   // destination.
 
-  Iterable<int> pathTo(int x, int y) {
+  Iterable<int> pathTo(int row, int col) {
     final breadcrumbs = HashMap<int, int>();
 
     // start from the end/goal
-    var currentOffset = grid.offset(x, y);
+    var currentOffset = grid.offset(row, col);
     var current = grid.getCellAt(currentOffset);
     final start = grid.getCellAt(_startOffset);
     if (distances.length < 1) {
       calculateDistances();
     }
 
-    debugPrint("solving from ${current.row} ${current.col} to ${start.row} ${start.col}");
+    // debugPrint("solving from ${current.row} ${current.col} to ${start.row} ${start.col}");
 
     while (current.col != start.col || current.row != start.row) {
       var linkedCells = grid.connectedCells(current);
@@ -70,9 +70,6 @@ class Dijkstra {
           break;
         }
       }
-    }
-    if (current.col != start.col && current.row != start.row) {
-      print("we reached the start cell");
     }
 
     return breadcrumbs.keys;
