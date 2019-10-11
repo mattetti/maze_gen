@@ -3,8 +3,9 @@ import 'dart:collection';
 import 'package:flutter/foundation.dart';
 import 'package:maze_gen/core/models/cell.dart';
 import 'package:maze_gen/core/models/grid.dart';
+import 'package:maze_gen/core/models/interfaces/grid_solver.dart';
 
-class Dijkstra {
+class Dijkstra implements GridSolver {
   Grid grid;
   int _startOffset;
   final distances = HashMap<int, int>();
@@ -15,6 +16,12 @@ class Dijkstra {
     } else {
       _startOffset = grid.entryOffset;
     }
+  }
+
+  Grid solve(Grid grid) {
+    grid.resetVisits();
+    final exitCell = grid.getCellAt(grid.exitOffset);
+    pathTo(exitCell.row, exitCell.col).forEach((int offset) => grid.getCellAt(offset).visited = true);
   }
 
   // calculateDistances from a start point
@@ -44,7 +51,7 @@ class Dijkstra {
 
   // shortestPathTo returns a list of cells used to go from the start to a given
   // destination.
-  Iterable<int> shortestPathTo(int row, int col) {
+  Iterable<int> pathTo(int row, int col) {
     final breadcrumbs = HashMap<int, int>();
 
     // start from the end/goal

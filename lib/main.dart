@@ -98,10 +98,11 @@ class _MyHomePageState extends State<MyHomePage> {
     if (index == 2) {
       setState(() {
         final grid = Provider.of<Grid>(context);
-        final solver = Dijkstra(grid);
-        final exitCell = grid.getCellAt(grid.exitOffset);
-        _visitedOffsets = solver.shortestPathTo(exitCell.row, exitCell.col);
-        debugPrint("${_visitedOffsets.length} steps to the solution");
+        grid.solve(Dijkstra(grid));
+        // final solver = Dijkstra(grid);
+        // final exitCell = grid.getCellAt(grid.exitOffset);
+        // _visitedOffsets = solver.pathTo(exitCell.row, exitCell.col);
+        // debugPrint("${_visitedOffsets.length} steps to the solution");
       });
       return;
     }
@@ -149,7 +150,18 @@ class _MyHomePageState extends State<MyHomePage> {
                       children: [
                         for (var col = 0; col != _grid.cols; ++col)
                           Expanded(
-                            child: cellViewForCell(row, col),
+                            child: Material(
+                              child: InkWell(
+                                  child: CellView(_grid.getCell(row, col), _grid.rows),
+                                  onTap: () {
+                                    setState(() {
+                                      final cell = _grid.getCell(row, col);
+                                      cell.exit = false;
+                                      _grid.exitOffset = _grid.offset(row, col);
+                                      _grid.solve(Dijkstra(_grid));
+                                    });
+                                  }),
+                            ),
                           ),
                       ],
                     ),
@@ -165,13 +177,6 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Icon(Icons.gesture),
       ),
     );
-  }
-
-  CellView cellViewForCell(int row, int col) {
-    final _grid = Provider.of<Grid>(context);
-    ;
-    final isVisited = _visitedOffsets == null ? false : _visitedOffsets.contains(_grid.offset(row, col));
-    return CellView(_grid.getCell(row, col), _grid.rows)..visited = isVisited;
   }
 }
 

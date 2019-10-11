@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:maze_gen/core/models/interfaces/grid_modifier.dart';
+import 'package:maze_gen/core/models/interfaces/grid_solver.dart';
 
 import 'cell.dart';
 
@@ -35,10 +36,21 @@ class Grid {
     return this;
   }
 
+  Grid resetVisits() {
+    for (var c in _cells) {
+      c.visited = false;
+    }
+  }
+
   // apply modifies the grid as per the passed grider (such as the "texture",
   // entries/exits etc...).
   Grid apply(GridModifier gridder) {
     return gridder.on(this);
+  }
+
+  Grid solve(GridSolver solver) {
+    resetVisits();
+    return solver.solve(this);
   }
 
   Cell getCell(int row, int col) {
