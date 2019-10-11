@@ -1,12 +1,16 @@
 import 'dart:math';
 
+import 'package:maze_gen/core/models/cell.dart';
 import 'package:maze_gen/core/models/grid.dart';
+import 'package:maze_gen/core/models/interfaces/grid_modifier.dart';
 import 'package:maze_gen/core/models/solvers/dijkstra.dart';
 
-class LongestPath {
-  static Grid on(Grid grid) {
+class LongestPath implements GridModifier {
+  Grid on(Grid grid) {
     final _rand = Random();
     int row = _rand.nextInt(grid.rows);
+
+    final startCell = grid.getCell(row, 0);
 
     // find the furthest cell from our random starting point
     var solver = Dijkstra(grid, startRow: row, startCol: 0);
@@ -20,11 +24,17 @@ class LongestPath {
     furthest = solver.furthestCell();
     furthestOffset = furthest[0];
     // furthestDistance = furthest[1];
-    final startCell = grid.getCellAt(furthestOffset);
+    final altStartCell = grid.getCellAt(furthestOffset);
 
-// new_distances = new_start.distances
-// goal, distance = new_distances.max
+    // startCell.connections[Wall.west.index] = true;
+    startCell.entry = true;
+    altStartCell.entry = true;
+    grid.entryOffset = grid.offset(altStartCell.row, altStartCell.col);
 
-// grid.distances = new_distances.path_to(goal)
+    // exit
+    // endCell.connections[Wall.east.index] = true;
+    endCell.exit = true;
+    grid.exitOffset = grid.offset(endCell.row, endCell.col);
+    return grid;
   }
 }

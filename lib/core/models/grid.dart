@@ -28,6 +28,13 @@ class Grid {
     exitOffset = size();
   }
 
+  Grid reset() {
+    for (var cell in _cells) {
+      cell.reset();
+    }
+    return this;
+  }
+
   // apply modifies the grid as per the passed grider (such as the "texture",
   // entries/exits etc...).
   Grid apply(GridModifier gridder) {

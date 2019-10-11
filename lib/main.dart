@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:maze_gen/core/models/generators/entries/random.dart';
+import 'package:maze_gen/core/models/generators/entries/longest_path.dart';
 import 'package:maze_gen/core/models/generators/grids/binary_tree.dart';
 import 'package:maze_gen/core/models/generators/grids/sidewinder.dart';
 import 'package:maze_gen/core/models/grid.dart';
 import 'package:maze_gen/core/models/solvers/dijkstra.dart';
 import 'package:maze_gen/ui/cell/cell_view.dart';
+import 'package:provider/provider.dart';
 
 import 'core/models/cell.dart';
 
@@ -17,13 +18,15 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Mazes',
-      theme: ThemeData(
-        primarySwatch: Colors.blueGrey,
-      ),
-      home: MyHomePage(title: "Mazes"),
-    );
+    return Provider<Grid>.value(
+        value: Grid(gridWidth, gridHeight).apply(Sidewinder()).apply(LongestPath()),
+        child: MaterialApp(
+          title: 'Mazes',
+          theme: ThemeData(
+            primarySwatch: Colors.blueGrey,
+          ),
+          home: MyHomePage(title: "Mazes"),
+        ));
   }
 }
 
@@ -37,7 +40,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  Grid _grid = Grid(gridWidth, gridHeight);
+  // Grid _grid = Grid(gridWidth, gridHeight);
   // list of offsets that are visited (walked)
   Iterable<int> _visitedOffsets;
   Iterator<Cell> _iterator;
@@ -47,7 +50,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    _resetGrid();
+    // _resetGrid();
   }
 
   // void generate() {
@@ -74,28 +77,29 @@ class _MyHomePageState extends State<MyHomePage> {
   void _resetGrid() {
     setState(() {
       _visitedOffsets = [];
-      _grid = newGrid();
+      newGrid(Provider.of<Grid>(context));
     });
   }
 
-  Grid newGrid() {
+  Grid newGrid(Grid grid) {
     switch (_currentIndex) {
       case 0:
-        return Grid(gridWidth, gridHeight).apply(BinaryTree()).apply(RandomEntries());
+        return grid.reset().apply(BinaryTree()).apply(LongestPath());
         break;
       case 1:
-        return Grid(gridWidth, gridHeight).apply(Sidewinder()).apply(RandomEntries());
+        return grid.reset().apply(Sidewinder()).apply(LongestPath());
         break;
       default:
-        return Grid(gridWidth, gridHeight).apply(BinaryTree()).apply(RandomEntries());
+        return grid.reset().apply(BinaryTree()).apply(LongestPath());
     }
   }
 
   void onTabTapped(int index) {
     if (index == 2) {
       setState(() {
-        final solver = Dijkstra(_grid);
-        final exitCell = _grid.getCellAt(_grid.exitOffset);
+        final grid = Provider.of<Grid>(context);
+        final solver = Dijkstra(grid);
+        final exitCell = grid.getCellAt(grid.exitOffset);
         _visitedOffsets = solver.shortestPathTo(exitCell.row, exitCell.col);
         debugPrint("${_visitedOffsets.length} steps to the solution");
       });
@@ -112,6 +116,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final _grid = Provider.of<Grid>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
@@ -163,6 +168,8 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   CellView cellViewForCell(int row, int col) {
+    final _grid = Provider.of<Grid>(context);
+    ;
     final isVisited = _visitedOffsets == null ? false : _visitedOffsets.contains(_grid.offset(row, col));
     return CellView(_grid.getCell(row, col), _grid.rows)..visited = isVisited;
   }

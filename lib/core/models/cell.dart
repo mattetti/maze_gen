@@ -18,4 +18,13 @@ class Cell {
       connections[i] = false;
     }
   }
+
+  reset() {
+    entry = false;
+    exit = false;
+    visited = false;
+    for (var i = 0; i != connections.length; ++i) {
+      connections[i] = false;
+    }
+  }
 }
