@@ -2,9 +2,10 @@ import 'dart:math';
 
 import 'package:maze_gen/core/models/cell.dart';
 import 'package:maze_gen/core/models/grid.dart';
+import 'package:maze_gen/core/models/interfaces/grid_modifier.dart';
 
-class BinaryTree {
-  static Grid on(Grid grid) {
+class BinaryTree implements GridModifier {
+  Grid on(Grid grid) {
     final _rand = Random();
 
     for (var i = 0; i < grid.size(); i++) {
@@ -29,20 +30,6 @@ class BinaryTree {
         grid.link(c, Wall.east);
       }
     }
-    // openings
-    // entry
-    int row = _rand.nextInt(grid.rows);
-    var cell = grid.getCell(row, 0);
-    cell.connections[Wall.west.index] = true;
-    cell.entry = true;
-    grid.entryOffset = grid.offset(row, 0);
-    // exit
-    row = _rand.nextInt(grid.rows);
-    cell = grid.getCell(row, grid.cols - 1);
-    cell.connections[Wall.east.index] = true;
-    cell.exit = true;
-    grid.exitOffset = grid.offset(row, grid.cols - 1);
-
     return grid;
   }
 }

@@ -1,5 +1,7 @@
 import 'dart:math';
 
+import 'package:maze_gen/core/models/interfaces/grid_modifier.dart';
+
 import 'cell.dart';
 
 class Grid {
@@ -24,6 +26,12 @@ class Grid {
       }
     }
     exitOffset = size();
+  }
+
+  // apply modifies the grid as per the passed grider (such as the "texture",
+  // entries/exits etc...).
+  Grid apply(GridModifier gridder) {
+    return gridder.on(this);
   }
 
   Cell getCell(int row, int col) {

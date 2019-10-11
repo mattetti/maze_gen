@@ -42,10 +42,9 @@ class Dijkstra {
     return distances;
   }
 
-  // pathTo returns a list of cells used to go from the start to a given
+  // shortestPathTo returns a list of cells used to go from the start to a given
   // destination.
-
-  Iterable<int> pathTo(int row, int col) {
+  Iterable<int> shortestPathTo(int row, int col) {
     final breadcrumbs = HashMap<int, int>();
 
     // start from the end/goal
@@ -74,5 +73,25 @@ class Dijkstra {
     }
 
     return breadcrumbs.keys;
+  }
+
+  // find the furthest cell and return its offset and the distance to the start
+  // point
+  List<int> furthestCell() {
+    var maxDistance = 0;
+    var furthestOffset = _startOffset;
+
+    if (distances.length < 1) {
+      calculateDistances();
+    }
+
+    distances.forEach((int offset, int distance) {
+      if (distance > maxDistance) {
+        furthestOffset = offset;
+        maxDistance = distance;
+      }
+    });
+
+    return [furthestOffset, maxDistance];
   }
 }

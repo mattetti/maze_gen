@@ -1,9 +1,7 @@
-import 'dart:async';
-import 'dart:collection';
-
 import 'package:flutter/material.dart';
-import 'package:maze_gen/core/models/generators/binary_tree.dart';
-import 'package:maze_gen/core/models/generators/sidewinder.dart';
+import 'package:maze_gen/core/models/generators/entries/random.dart';
+import 'package:maze_gen/core/models/generators/grids/binary_tree.dart';
+import 'package:maze_gen/core/models/generators/grids/sidewinder.dart';
 import 'package:maze_gen/core/models/grid.dart';
 import 'package:maze_gen/core/models/solvers/dijkstra.dart';
 import 'package:maze_gen/ui/cell/cell_view.dart';
@@ -83,13 +81,13 @@ class _MyHomePageState extends State<MyHomePage> {
   Grid newGrid() {
     switch (_currentIndex) {
       case 0:
-        return BinaryTree.on(Grid(gridWidth, gridHeight));
+        return Grid(gridWidth, gridHeight).apply(BinaryTree()).apply(RandomEntries());
         break;
       case 1:
-        return Sidewinder.on(Grid(gridWidth, gridHeight));
+        return Grid(gridWidth, gridHeight).apply(Sidewinder()).apply(RandomEntries());
         break;
       default:
-        return BinaryTree.on(Grid(gridWidth, gridHeight));
+        return Grid(gridWidth, gridHeight).apply(BinaryTree()).apply(RandomEntries());
     }
   }
 
@@ -98,7 +96,7 @@ class _MyHomePageState extends State<MyHomePage> {
       setState(() {
         final solver = Dijkstra(_grid);
         final exitCell = _grid.getCellAt(_grid.exitOffset);
-        _visitedOffsets = solver.pathTo(exitCell.row, exitCell.col);
+        _visitedOffsets = solver.shortestPathTo(exitCell.row, exitCell.col);
         debugPrint("${_visitedOffsets.length} steps to the solution");
       });
       return;

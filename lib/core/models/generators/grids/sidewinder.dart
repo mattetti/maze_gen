@@ -2,9 +2,10 @@ import 'dart:math';
 
 import 'package:maze_gen/core/models/cell.dart';
 import 'package:maze_gen/core/models/grid.dart';
+import 'package:maze_gen/core/models/interfaces/grid_modifier.dart';
 
-class Sidewinder {
-  static Grid on(Grid grid) {
+class Sidewinder implements GridModifier {
+  Grid on(Grid grid) {
     final _iterator = grid.cellsByRow().iterator;
     final _rand = Random();
 
@@ -31,23 +32,6 @@ class Sidewinder {
         grid.link(cell, Wall.east);
       }
     }
-    return _setEntryAndExits(grid);
-  }
-
-  static Grid _setEntryAndExits(Grid grid) {
-    final _rand = Random();
-    // entry
-    int row = _rand.nextInt(grid.rows);
-    var cell = grid.getCell(row, 0);
-    cell.connections[Wall.west.index] = true;
-    cell.entry = true;
-    grid.entryOffset = grid.offset(row, 0);
-    // exit
-    row = _rand.nextInt(grid.rows);
-    cell = grid.getCell(row, grid.cols - 1);
-    cell.connections[Wall.east.index] = true;
-    cell.exit = true;
-    grid.exitOffset = grid.offset(cell.row, cell.col);
     return grid;
   }
 }
