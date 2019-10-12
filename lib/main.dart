@@ -40,43 +40,16 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  // Grid _grid = Grid(gridWidth, gridHeight);
-  // list of offsets that are visited (walked)
-  Iterable<int> _visitedOffsets;
-  Iterator<Cell> _iterator;
-
   var _currentIndex = 0;
+  var _infoBoxText = "";
 
   @override
   void initState() {
     super.initState();
-    // _resetGrid();
   }
-
-  // void generate() {
-  //   final nextGridContent = newGrid();
-  //   _iterator = nextGridContent.cellsByRow().iterator;
-  //   Timer.periodic(Duration(microseconds: 50), onTick);
-  // }
-
-  // void onTick(Timer timer) {
-  //   if (_iterator.moveNext()) {
-  //     var visited = _iterator.current;
-  //     final cell = _grid.getCell(visited.row, visited.col);
-  //     cell.connections = visited.connections;
-  //     setState(() {});
-  //     // debugPrint('visited: ${visited.row}, ${visited.col}');
-  //   } else {
-  //     timer.cancel();
-  //     _iterator = null;
-  //     setState(() {});
-  //     // debugPrint('done');
-  //   }
-  // }
 
   void _resetGrid() {
     setState(() {
-      _visitedOffsets = [];
       newGrid(Provider.of<Grid>(context));
     });
   }
@@ -98,11 +71,7 @@ class _MyHomePageState extends State<MyHomePage> {
     if (index == 2) {
       setState(() {
         final grid = Provider.of<Grid>(context);
-        grid.solve(Dijkstra(grid));
-        // final solver = Dijkstra(grid);
-        // final exitCell = grid.getCellAt(grid.exitOffset);
-        // _visitedOffsets = solver.pathTo(exitCell.row, exitCell.col);
-        // debugPrint("${_visitedOffsets.length} steps to the solution");
+        _infoBoxText = grid.solve(Dijkstra(grid)).toString();
       });
       return;
     }
@@ -138,37 +107,45 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       ),
       body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: AspectRatio(
-            aspectRatio: 1.0,
-            child: Column(
-              children: [
-                for (var row = 0; row != _grid.rows; ++row)
-                  Expanded(
-                    child: Row(
-                      children: [
-                        for (var col = 0; col != _grid.cols; ++col)
-                          Expanded(
-                            child: Material(
-                              child: InkWell(
-                                  child: CellView(_grid.getCell(row, col), _grid.rows),
-                                  onTap: () {
-                                    setState(() {
-                                      final cell = _grid.getCell(row, col);
-                                      cell.exit = false;
-                                      _grid.exitOffset = _grid.offset(row, col);
-                                      _grid.solve(Dijkstra(_grid));
-                                    });
-                                  }),
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
-              ],
+        child: Column(
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: AspectRatio(
+                aspectRatio: 1.0,
+                child: Column(
+                  children: [
+                    for (var row = 0; row != _grid.rows; ++row)
+                      Expanded(
+                        child: Row(
+                          children: [
+                            for (var col = 0; col != _grid.cols; ++col)
+                              Expanded(
+                                child: Material(
+                                  child: InkWell(
+                                      child: CellView(_grid.getCell(row, col), _grid.rows),
+                                      onTap: () {
+                                        setState(() {
+                                          final cell = _grid.getCell(row, col);
+                                          cell.exit = false;
+                                          _grid.exitOffset = _grid.offset(row, col);
+                                          _infoBoxText = _grid.solve(Dijkstra(_grid)).toString();
+                                        });
+                                      }),
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                  ],
+                ),
+              ),
             ),
-          ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: InfoBox(_infoBoxText),
+            ),
+          ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
@@ -177,6 +154,17 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Icon(Icons.gesture),
       ),
     );
+  }
+}
+
+class InfoBox extends StatelessWidget {
+  String text;
+
+  InfoBox(this.text, {Key key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(text);
   }
 }
 

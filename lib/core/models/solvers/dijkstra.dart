@@ -1,6 +1,5 @@
 import 'dart:collection';
 
-import 'package:flutter/foundation.dart';
 import 'package:maze_gen/core/models/cell.dart';
 import 'package:maze_gen/core/models/grid.dart';
 import 'package:maze_gen/core/models/interfaces/grid_solver.dart';
@@ -18,10 +17,12 @@ class Dijkstra implements GridSolver {
     }
   }
 
-  Grid solve(Grid grid) {
+  int solve(Grid grid) {
     grid.resetVisits();
     final exitCell = grid.getCellAt(grid.exitOffset);
-    pathTo(exitCell.row, exitCell.col).forEach((int offset) => grid.getCellAt(offset).visited = true);
+    final pathOffsets = pathTo(exitCell.row, exitCell.col);
+    pathOffsets.forEach((int offset) => grid.getCellAt(offset).visited = true);
+    return pathOffsets.length;
   }
 
   // calculateDistances from a start point

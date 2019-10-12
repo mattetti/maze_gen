@@ -18,8 +18,18 @@ class CellView extends StatelessWidget {
         ),
         color: _cellColor(cell),
       ),
-      // child: Text(text, style: TextStyle(fontSize: 11.0)),
+      // child: cell.entry || cell.exit ? Text(cellText(cell), style: TextStyle(fontSize: 11.0)) : null,
     );
+  }
+
+  String cellText(Cell cell) {
+    if (cell.entry) {
+      return "S";
+    }
+    if (cell.exit) {
+      return "E";
+    }
+    return "";
   }
 
   Color _cellColor(Cell cell) {
@@ -39,7 +49,7 @@ class CellView extends StatelessWidget {
   BorderSide _getBorderSide(Wall wall) {
     // west wall is only drawn when we are in the first column
     if (wall == Wall.west) {
-      if (cell.col == 0 && !cell.connections[wall.index]) {
+      if (cell.col == 0 && !cell.entry && !cell.connections[wall.index]) {
         return BorderSide(width: 5.0, style: BorderStyle.solid, color: Colors.blueGrey);
       }
       return BorderSide.none;

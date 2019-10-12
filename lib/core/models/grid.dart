@@ -48,7 +48,8 @@ class Grid {
     return gridder.on(this);
   }
 
-  Grid solve(GridSolver solver) {
+  // solve finds a path and mark the cells as visited. It also returns the number of steps needed to solve the grid.
+  int solve(GridSolver solver) {
     resetVisits();
     return solver.solve(this);
   }
