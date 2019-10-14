@@ -42,6 +42,9 @@ class CellView extends StatelessWidget {
     if (cell.exit) {
       return Colors.green.withOpacity(0.4);
     }
+    if (cell.color != null) {
+      return cell.color;
+    }
 
     return Colors.white;
   }

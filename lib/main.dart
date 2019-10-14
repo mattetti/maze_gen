@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:maze_gen/core/models/generators/enhancers/colorize.dart';
 import 'package:maze_gen/core/models/generators/entries/longest_path.dart';
 import 'package:maze_gen/core/models/generators/grids/binary_tree.dart';
 import 'package:maze_gen/core/models/generators/grids/sidewinder.dart';
@@ -6,8 +7,6 @@ import 'package:maze_gen/core/models/grid.dart';
 import 'package:maze_gen/core/models/solvers/dijkstra.dart';
 import 'package:maze_gen/ui/cell/cell_view.dart';
 import 'package:provider/provider.dart';
-
-import 'core/models/cell.dart';
 
 void main() => runApp(MyApp());
 
@@ -19,7 +18,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Provider<Grid>.value(
-        value: Grid(gridWidth, gridHeight).apply(Sidewinder()).apply(LongestPath()),
+        value: Grid(gridWidth, gridHeight).apply(Sidewinder()).apply(Colorize()).apply(LongestPath()),
         child: MaterialApp(
           title: 'Mazes',
           theme: ThemeData(
@@ -51,19 +50,20 @@ class _MyHomePageState extends State<MyHomePage> {
   void _resetGrid() {
     setState(() {
       newGrid(Provider.of<Grid>(context));
+      _infoBoxText = "";
     });
   }
 
   Grid newGrid(Grid grid) {
     switch (_currentIndex) {
       case 0:
-        return grid.reset().apply(BinaryTree()).apply(LongestPath());
+        return grid.reset().apply(BinaryTree()).apply(Colorize()).apply(LongestPath());
         break;
       case 1:
-        return grid.reset().apply(Sidewinder()).apply(LongestPath());
+        return grid.reset().apply(Sidewinder()).apply(Colorize()).apply(LongestPath());
         break;
       default:
-        return grid.reset().apply(BinaryTree()).apply(LongestPath());
+        return grid.reset().apply(BinaryTree()).apply(Colorize()).apply(LongestPath());
     }
   }
 
@@ -71,7 +71,7 @@ class _MyHomePageState extends State<MyHomePage> {
     if (index == 2) {
       setState(() {
         final grid = Provider.of<Grid>(context);
-        _infoBoxText = grid.solve(Dijkstra(grid)).toString();
+        _infoBoxText = grid.solve(Dijkstra(grid)).toString() + " steps";
       });
       return;
     }
@@ -129,7 +129,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                           final cell = _grid.getCell(row, col);
                                           cell.exit = false;
                                           _grid.exitOffset = _grid.offset(row, col);
-                                          _infoBoxText = _grid.solve(Dijkstra(_grid)).toString();
+                                          _infoBoxText = _grid.solve(Dijkstra(_grid)).toString() + " steps";
                                         });
                                       }),
                                 ),

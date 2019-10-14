@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 enum Wall {
   north,
   south,
@@ -8,6 +10,7 @@ enum Wall {
 class Cell {
   final int row;
   final int col;
+  Color color;
   var entry = false;
   var exit = false;
   var visited = false;
@@ -23,6 +26,7 @@ class Cell {
     entry = false;
     exit = false;
     visited = false;
+    color = null;
     for (var i = 0; i != connections.length; ++i) {
       connections[i] = false;
     }
