@@ -56,19 +56,24 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Grid newGrid(Grid grid) {
+    Duration _gridGenerationTime;
+    final startT = DateTime.now();
+    Grid newGrid;
     switch (_currentIndex) {
-      // case 0:
-      //   return grid.reset().apply(BinaryTree()).apply(Colorize()).apply(LongestPath());
-      //   break;
       case 0:
-        return grid.reset().apply(Sidewinder()).apply(Colorize()).apply(LongestPath());
+        newGrid = grid.reset().apply(Sidewinder()).apply(Colorize()).apply(LongestPath());
         break;
       case 1:
-        return grid.reset().apply(AldousBroder()).apply(Colorize()).apply(LongestPath());
+        newGrid = grid.reset().apply(AldousBroder()).apply(Colorize()).apply(LongestPath());
+        _gridGenerationTime = DateTime.now().difference(startT);
         break;
       default:
-        return grid.reset().apply(BinaryTree()).apply(Colorize()).apply(LongestPath());
+        newGrid = grid.reset().apply(BinaryTree()).apply(Colorize()).apply(LongestPath());
+        break;
     }
+    _gridGenerationTime = DateTime.now().difference(startT);
+    debugPrint("Grid generation took ${_gridGenerationTime.inMilliseconds}ms");
+    return newGrid;
   }
 
   void onTabTapped(int index) {
