@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:maze_gen/core/models/generators/enhancers/colorize.dart';
 import 'package:maze_gen/core/models/generators/entries/longest_path.dart';
+import 'package:maze_gen/core/models/generators/grids/aldous_broder.dart';
 import 'package:maze_gen/core/models/generators/grids/binary_tree.dart';
 import 'package:maze_gen/core/models/generators/grids/sidewinder.dart';
 import 'package:maze_gen/core/models/grid.dart';
@@ -10,8 +11,8 @@ import 'package:provider/provider.dart';
 
 void main() => runApp(MyApp());
 
-int gridWidth = 20;
-int gridHeight = 20;
+int gridWidth = 25;
+int gridHeight = 25;
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
@@ -56,11 +57,14 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Grid newGrid(Grid grid) {
     switch (_currentIndex) {
+      // case 0:
+      //   return grid.reset().apply(BinaryTree()).apply(Colorize()).apply(LongestPath());
+      //   break;
       case 0:
-        return grid.reset().apply(BinaryTree()).apply(Colorize()).apply(LongestPath());
+        return grid.reset().apply(Sidewinder()).apply(Colorize()).apply(LongestPath());
         break;
       case 1:
-        return grid.reset().apply(Sidewinder()).apply(Colorize()).apply(LongestPath());
+        return grid.reset().apply(AldousBroder()).apply(Colorize()).apply(LongestPath());
         break;
       default:
         return grid.reset().apply(BinaryTree()).apply(Colorize()).apply(LongestPath());
@@ -95,13 +99,17 @@ class _MyHomePageState extends State<MyHomePage> {
         currentIndex: _currentIndex,
         onTap: onTabTapped,
         items: [
-          BottomNavigationBarItem(
-            icon: new Icon(Icons.import_export),
-            title: new Text('Binary Tree'),
-          ),
+          // BottomNavigationBarItem(
+          //   icon: new Icon(Icons.import_export),
+          //   title: new Text('Binary Tree'),
+          // ),
           BottomNavigationBarItem(
             icon: new Icon(Icons.rowing),
             title: new Text('Sidewinder'),
+          ),
+          BottomNavigationBarItem(
+            icon: new Icon(Icons.rowing),
+            title: new Text('Aldous Broder'),
           ),
           BottomNavigationBarItem(icon: Icon(Icons.remove_red_eye), title: Text('Solve'))
         ],

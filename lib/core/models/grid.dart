@@ -62,6 +62,9 @@ class Grid {
   }
 
   Cell getCellAt(int index) {
+    if (index < 0 || index > _cells.length) {
+      return null;
+    }
     return _cells[index];
   }
 
@@ -81,9 +84,45 @@ class Grid {
           bidiCell.connections[Wall.west.index] = true;
         }
         break;
+      case Wall.west:
+        cell.connections[Wall.west.index] = true;
+        final bidiCell = adjacentCell(cell, Wall.west);
+        if (bidiCell != null) {
+          bidiCell.connections[Wall.east.index] = true;
+        }
+        break;
+      case Wall.south:
+        cell.connections[Wall.south.index] = true;
+        final bidiCell = adjacentCell(cell, Wall.south);
+        if (bidiCell != null) {
+          bidiCell.connections[Wall.north.index] = true;
+        }
+        break;
       default:
         assert(false);
     }
+  }
+
+  List<Cell> neighborCells(Cell cell) {
+    List<Cell> neighbors = [];
+    // remove the boundary walls
+    final walls = Wall.values.toList();
+    if (isEasternBoundary(cell)) {
+      walls.removeAt(walls.indexOf(Wall.east));
+    }
+    if (isNothernBoundary(cell)) {
+      walls.removeAt(walls.indexOf(Wall.north));
+    }
+    if (isWesternBoundary(cell)) {
+      walls.removeAt(walls.indexOf(Wall.west));
+    }
+    if (isSouthernBoundary(cell)) {
+      walls.removeAt(walls.indexOf(Wall.south));
+    }
+    walls.forEach((Wall w) {
+      neighbors.add(adjacentCell(cell, w));
+    });
+    return neighbors;
   }
 
   // connectedCells returns a list of cells that are directly connected to the
@@ -113,15 +152,38 @@ class Grid {
   }
 
   Cell adjacentCell(Cell cellFrom, Wall wall) {
+    return getCellAt(adjacentCellOffset(cellFrom, wall));
+  }
+
+  // sharedWall returns the wall (relative to a) that is shared with b, null is
+  // returned if they don't share a wall.
+  Wall sharedWall(Cell a, Cell b) {
+    if (b.row == a.row - 1 && a.col == b.col) {
+      return Wall.north;
+    }
+    if (b.row == a.row + 1 && a.col == b.col) {
+      return Wall.south;
+    }
+    if (a.row == b.row && b.col == a.col + 1) {
+      return Wall.east;
+    }
+    if (a.row == b.row && b.col == a.col - 1) {
+      return Wall.west;
+    }
+    print("${a.row}/${a.col}, ${b.row}/${b.col} don't share a wall");
+    return null;
+  }
+
+  int adjacentCellOffset(Cell cellFrom, Wall wall) {
     switch (wall) {
       case Wall.north:
-        return getCell(cellFrom.row - 1, cellFrom.col);
+        return offset(cellFrom.row - 1, cellFrom.col);
       case Wall.west:
-        return getCell(cellFrom.row, cellFrom.col - 1);
+        return offset(cellFrom.row, cellFrom.col - 1);
       case Wall.south:
-        return getCell(cellFrom.row + 1, cellFrom.col);
+        return offset(cellFrom.row + 1, cellFrom.col);
       case Wall.east:
-        return getCell(cellFrom.row, cellFrom.col + 1);
+        return offset(cellFrom.row, cellFrom.col + 1);
       default:
         assert(false);
         return null;

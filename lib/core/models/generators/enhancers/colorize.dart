@@ -10,11 +10,17 @@ class Colorize implements GridModifier {
     final calculator = DistanceCalculator(grid);
     final distances = calculator.calculateDistances();
     final maxDistance = distances.values.reduce(max);
+    if (maxDistance.isNaN) {
+      assert(false);
+    }
     double intensity;
     int dark;
     int bright;
     distances.forEach((int offset, int distance) {
       intensity = (maxDistance - distance).toDouble() / maxDistance;
+      if (intensity.isNaN) {
+        intensity = 0.0;
+      }
       dark = (255 * intensity).round();
       bright = 128 + (127 * intensity).round();
       grid.getCellAt(offset).color = Color.fromRGBO(dark, bright, dark, 0.8);
