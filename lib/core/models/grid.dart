@@ -191,6 +191,7 @@ class Grid {
   }
 
   bool isNothernBoundary(Cell cell) {
+    assert(cell != null);
     if (cell.row == 0) {
       return true;
     }
@@ -198,6 +199,7 @@ class Grid {
   }
 
   bool isEasternBoundary(Cell cell) {
+    assert(cell != null);
     if (cell.col == cols - 1) {
       return true;
     }
@@ -205,6 +207,7 @@ class Grid {
   }
 
   bool isWesternBoundary(Cell cell) {
+    assert(cell != null);
     if (cell.col == 0) {
       return true;
     }
@@ -212,6 +215,7 @@ class Grid {
   }
 
   bool isSouthernBoundary(Cell cell) {
+    assert(cell != null);
     if (cell.row == rows - 1) {
       return true;
     }

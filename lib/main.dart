@@ -3,6 +3,7 @@ import 'package:maze_gen/core/models/generators/enhancers/colorize.dart';
 import 'package:maze_gen/core/models/generators/entries/longest_path.dart';
 import 'package:maze_gen/core/models/generators/grids/aldous_broder.dart';
 import 'package:maze_gen/core/models/generators/grids/binary_tree.dart';
+import 'package:maze_gen/core/models/generators/grids/hunt_and_kill.dart';
 import 'package:maze_gen/core/models/generators/grids/sidewinder.dart';
 import 'package:maze_gen/core/models/grid.dart';
 import 'package:maze_gen/core/models/solvers/dijkstra.dart';
@@ -19,7 +20,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Provider<Grid>.value(
-        value: Grid(gridWidth, gridHeight).apply(Sidewinder()).apply(Colorize()).apply(LongestPath()),
+        value: Grid(gridWidth, gridHeight).apply(HuntAndKill()).apply(Colorize()).apply(LongestPath()),
         child: MaterialApp(
           title: 'Mazes',
           theme: ThemeData(
@@ -61,7 +62,7 @@ class _MyHomePageState extends State<MyHomePage> {
     Grid newGrid;
     switch (_currentIndex) {
       case 0:
-        newGrid = grid.reset().apply(Sidewinder()).apply(Colorize()).apply(LongestPath());
+        newGrid = grid.reset().apply(HuntAndKill()).apply(Colorize()).apply(LongestPath());
         break;
       case 1:
         newGrid = grid.reset().apply(AldousBroder()).apply(Colorize()).apply(LongestPath());
@@ -110,7 +111,7 @@ class _MyHomePageState extends State<MyHomePage> {
           // ),
           BottomNavigationBarItem(
             icon: new Icon(Icons.rowing),
-            title: new Text('Sidewinder'),
+            title: new Text('Hunt&Kill'),
           ),
           BottomNavigationBarItem(
             icon: new Icon(Icons.rowing),
