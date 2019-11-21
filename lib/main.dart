@@ -4,7 +4,6 @@ import 'package:maze_gen/core/models/generators/entries/longest_path.dart';
 import 'package:maze_gen/core/models/generators/grids/aldous_broder.dart';
 import 'package:maze_gen/core/models/generators/grids/binary_tree.dart';
 import 'package:maze_gen/core/models/generators/grids/hunt_and_kill.dart';
-import 'package:maze_gen/core/models/generators/grids/sidewinder.dart';
 import 'package:maze_gen/core/models/grid.dart';
 import 'package:maze_gen/core/models/solvers/dijkstra.dart';
 import 'package:maze_gen/ui/cell/cell_view.dart';
